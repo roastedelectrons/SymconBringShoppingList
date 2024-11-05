@@ -66,7 +66,7 @@ class BringShoppingList extends IPSModule
 			$this->SetTimerInterval('Sync', $this->ReadPropertyInteger('SyncInterval') * 1000);
 		} else {
 			$referenceList = $this->GetReferenceList();
-			foreach ($ReferenceList as $reference) {
+			foreach ($referenceList as $reference) {
                 $this->UnregisterReference($reference);
             }
 			$this->SetTimerInterval('Sync', 0);
@@ -80,10 +80,10 @@ class BringShoppingList extends IPSModule
         $this->SetTimerInterval('Update', $this->ReadPropertyInteger('UpdateInterval') * 60 *1000);
 		
 
-        if ($this->GetStatus() != 200)
+        if ($this->GetStatus() != 200 || $this->ReadAttributeString('AccessToken') == '')
 			$this->Login();
 
-		if ($this->GetStatus() == 200)
+		if ($this->GetStatus() == IS_ACTIVE)
 			$this->Update();
     }
 
@@ -209,11 +209,17 @@ class BringShoppingList extends IPSModule
 
 	private function Sync()
 	{
+		$semaphore = 'BringShoppingList.Sync.'.$this->ReadPropertyString('ListID');
+
+		if (IPS_SemaphoreEnter($semaphore, 1000) === false)
+			return false;
+
 		$alexaListInstance = $this->ReadPropertyInteger('AlexaListInstance');
 
 		if (!IPS_InstanceExists($alexaListInstance))
 			return false;
 
+		$this->SendDebug( __FUNCTION__, 'Start', 0);
 
 		if ($this->ReadPropertyInteger('SyncMode') == 1){
 
@@ -230,9 +236,15 @@ class BringShoppingList extends IPSModule
 				$this->Update();
 				ALEXALIST_Update($alexaListInstance);
 				$this->LogMessage('Synchronized '.count($alexaListItems).' item(s) from Alexa to Bring shopping list: '. implode(', ', array_column($alexaListItems, 'value') ) , KL_MESSAGE);
+				$this->SendDebug( __FUNCTION__, 'Synchronized items: '. json_encode($alexaListItems), 0);
+			} else{
+				$this->SendDebug( __FUNCTION__, 'No items to sync', 0);
 			}
 
 		}
+
+		$this->SendDebug( __FUNCTION__, 'End', 0);
+		IPS_SemaphoreLeave($semaphore);
 
 	}
 
@@ -241,8 +253,10 @@ class BringShoppingList extends IPSModule
 		$email = $this->ReadPropertyString('Email');
 		$password = $this->ReadPropertyString('Password');
 
-		if ($email == '' || $password == '')
+		if ($email == '' || $password == ''){
+			$this->SetStatus(201);
 			return false;
+		}
 
 		$options['email'] = $email;
 		$options['password'] = $password;
@@ -446,20 +460,27 @@ class BringShoppingList extends IPSModule
 
             $items = json_decode( $this->ReadAttributeString('Lists'), true);
 
-            if (is_array($items))
-                return $items;     
+            if (is_array($items)){
+                return $items;   
+			} else {
+				return [];
+			}
+  
 
         }
 
 		$result = $this->request(self::GET_REQUEST,"bringusers/".$this->ReadAttributeString('UUID')."/lists", "");
 
-        $lists = json_decode($result, true)['lists'];
+		if ($this->httpStatus != 200)
+			return [];
 
-        if (!is_array($lists)) {
+        $lists = json_decode($result, true);
+
+        if (!isset($lists['lists'])) {
             return [];
         }
 
-        $this->WriteAttributeString('Lists', json_encode($lists));
+        $this->WriteAttributeString('Lists', json_encode($lists['lists']));
 
         return $lists;
     }
