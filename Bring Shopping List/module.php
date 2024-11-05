@@ -83,8 +83,13 @@ class BringShoppingList extends IPSModule
         if ($this->GetStatus() != 200 || $this->ReadAttributeString('AccessToken') == '')
 			$this->Login();
 
-		if ($this->GetStatus() == IS_ACTIVE)
-			$this->Update();
+		if ($this->GetStatus() != IS_ACTIVE)
+			return false;
+
+		if ($this->ReadAttributeString('Lists') == '')
+			$this->GetLists(false);
+
+		$this->Update();
     }
 
 
@@ -254,7 +259,6 @@ class BringShoppingList extends IPSModule
 		$password = $this->ReadPropertyString('Password');
 
 		if ($email == '' || $password == ''){
-			$this->SetStatus(201);
 			return false;
 		}
 
@@ -492,6 +496,11 @@ class BringShoppingList extends IPSModule
 
         $selectOptions = array();
 
+		$selectOptions[] = [
+			'caption' => 'Select list',
+			'value'   => ''
+		];  
+
         foreach( $items as $item){
 
 			$option = [
@@ -501,13 +510,6 @@ class BringShoppingList extends IPSModule
             
             $selectOptions[] = $option;
         }
-
-		if ($selectOptions == array()){
-			$selectOptions[] = [
-				'caption' => 'no lists available',
-				'value'   => ''
-			];  
-		}
 
         return $selectOptions;
     }
