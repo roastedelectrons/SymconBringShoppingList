@@ -1,0 +1,14 @@
+{
+    "id": "{433E041A-6A52-19C4-2F02-195AB45F382F}",
+    "name": "Bring Shopping List",
+    "type": 3,
+    "vendor": "Bring!",
+    "aliases": [
+        "Bring! Einkaufsliste"
+    ],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "BringList",
+    "url": ""
+}
