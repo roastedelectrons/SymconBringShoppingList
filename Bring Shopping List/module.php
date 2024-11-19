@@ -23,9 +23,6 @@ class BringShoppingList extends IPSModule
         $this->RegisterPropertyBoolean('ShowCompletedItems', false);
         $this->RegisterPropertyBoolean('DeleteCompletedItems', false);
         $this->RegisterPropertyInteger('UpdateInterval', 60);
-		$this->RegisterPropertyInteger('AlexaListInstance', 0);
-		$this->RegisterPropertyInteger('SyncMode', 1);
-		$this->RegisterPropertyInteger('SyncInterval', 0);
 
 		$this->RegisterAttributeString('UUID', '');
 		$this->RegisterAttributeString('AccessToken', '');
@@ -37,7 +34,6 @@ class BringShoppingList extends IPSModule
 
         $this->RegisterTimer('Update', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "Update", "");');
 		$this->RegisterTimer('RefreshToken', 0, 'IPS_RequestAction('.$this->InstanceID.', "Login", "");');  
-		$this->RegisterTimer('Sync', 0, 'IPS_RequestAction(' . $this->InstanceID . ', "Sync", "");');
 
 		if (IPS_GetKernelVersion() >= 7.1)
 			$this->SetVisualizationType(1);
@@ -58,20 +54,7 @@ class BringShoppingList extends IPSModule
 
         if (IPS_GetKernelRunlevel() !== KR_READY) {
             return;
-        }
-
-		$alexaListInstance = $this->ReadPropertyInteger('AlexaListInstance');
-		if ($alexaListInstance > 1){
-			$this->RegisterReference($alexaListInstance);
-			$this->SetTimerInterval('Sync', $this->ReadPropertyInteger('SyncInterval') * 1000);
-		} else {
-			$referenceList = $this->GetReferenceList();
-			foreach ($referenceList as $reference) {
-                $this->UnregisterReference($reference);
-            }
-			$this->SetTimerInterval('Sync', 0);
-		}
-			
+        }		
 
         $this->MaintainVariable('AddItem', $this->Translate('Add Item'), 3, '', 1, true );
         $this->MaintainAction('AddItem', true);
@@ -145,8 +128,8 @@ class BringShoppingList extends IPSModule
                 break;
 
 			// Visu
-            case 'VisuGetList':
-                $items = $this->ReadAttributeString('ListItems',);
+            case 'VisuGetItems':
+                $items = $this->GetItemsForVisu();
                 $this->UpdateVisualizationValue($items);
                 break;
 
@@ -173,15 +156,27 @@ class BringShoppingList extends IPSModule
 
     }
 
+	// Visualization functions 
+
     public function GetVisualizationTile() {
 
-        // Füge statisches HTML aus Datei hinzu
         $module = file_get_contents(__DIR__ . '/module.html');
 
         return $module;
     }
 
-    private function UpdateListVariable( array $listItems )
+    private function UpdateVisualization()
+    {
+		$items = $this->GetItemsForVisu();
+
+        $this->UpdateVariables($items);
+
+        if (IPS_GetKernelVersion() >= 7.1){
+            $this->UpdateVisualizationValue( json_encode($items) );
+        }
+    }
+
+	private function UpdateVariables( array $listItems )
     {
         $string = '';
 
@@ -189,69 +184,29 @@ class BringShoppingList extends IPSModule
             $symbol = "☐";
             if ($item['completed'])
             	$symbol = "☑";
-            $string .= $symbol. "    " .$item['name']."\n\r";
+            $string .= $symbol. "    " .$item['value']."\n\r";
         }
         
         $this->SetValue('List', $string);
     }
 
-    public function Update()
-    {
-        if ($this->ReadPropertyBoolean('ShowCompletedItems')){
-            $items = $this->GetListItems(true);
-        } else {
-            $items = $this->GetListItems(false);
-        }
-        
-        
-        $this->WriteAttributeString('ListItems', json_encode($items));
-
-        $this->UpdateListVariable($items);
-        if (IPS_GetKernelVersion() >= 7.1){
-            $this->UpdateVisualizationValue( json_encode($items) );
-        }
-    }
-
-	private function Sync()
+	private function GetItemsForVisu()
 	{
-		$semaphore = 'BringShoppingList.Sync.'.$this->ReadPropertyString('ListID');
+		$items = json_decode($this->ReadAttributeString('ListItems'), true);
 
-		if (IPS_SemaphoreEnter($semaphore, 1000) === false)
-			return false;
+		if ($items === false)
+			return [];
 
-		$alexaListInstance = $this->ReadPropertyInteger('AlexaListInstance');
-
-		if (!IPS_InstanceExists($alexaListInstance))
-			return false;
-
-		$this->SendDebug( __FUNCTION__, 'Start', 0);
-
-		if ($this->ReadPropertyInteger('SyncMode') == 1){
-
-			$alexaListItems = ALEXALIST_GetListItems($alexaListInstance, false);
-
-			foreach($alexaListItems as $item){
-				$result = $this->AddItem($item['value'], '');
-				if ($result){
-					ALEXALIST_DeleteItemByID($alexaListInstance, $item['id']);
-				}
+		foreach( $items as $key=>$item){
+			$items[$key]['id'] = $item['name'];
+			$items[$key]['value'] = $item['name'];
+			if (!$this->ReadPropertyBoolean('ShowCompletedItems') && $item['completed']){
+				unset($items[$key]);
 			}
-	
-			if (count($alexaListItems) > 0){
-				$this->Update();
-				ALEXALIST_Update($alexaListInstance);
-				$this->LogMessage('Synchronized '.count($alexaListItems).' item(s) from Alexa to Bring shopping list: '. implode(', ', array_column($alexaListItems, 'value') ) , KL_MESSAGE);
-				$this->SendDebug( __FUNCTION__, 'Synchronized items: '. json_encode($alexaListItems), 0);
-			} else{
-				$this->SendDebug( __FUNCTION__, 'No items to sync', 0);
-			}
-
 		}
-
-		$this->SendDebug( __FUNCTION__, 'End', 0);
-		IPS_SemaphoreLeave($semaphore);
-
+		return $items;
 	}
+
 
 	private function Login()
 	{
@@ -296,6 +251,12 @@ class BringShoppingList extends IPSModule
 		return false;
 	}
 
+	// Public module functions
+
+	public function Update()
+	{
+		$this->GetItems();
+	}
 
     public function AddItem( string $itemText, string $specificationText = "" )
     {
@@ -348,13 +309,38 @@ class BringShoppingList extends IPSModule
     }
 
 
-    public function GetListItems(bool $includeCompletedItems = false): ?array
+    public function GetItems(bool $includeCompletedItems = false)
     {
 
+		$items = $this->getListItems();
+
+		if ($items === false)
+			return false;
+
+		$this->WriteAttributeString('ListItems', json_encode($items));
+
+		$this->UpdateVisualization();
+
+		if ($includeCompletedItems === false){
+			foreach($items as $key=>$item){
+				if ( $item['completed'] == true){
+					unset($items[$key]);
+				}
+			}
+		}
+
+        return $items;
+    }
+
+
+	// Bring! API functions
+
+	private function getListItems()
+	{
 		$result = $this->request(self::GET_REQUEST,"bringlists/".$this->ReadPropertyString('ListID'),"");
 
         if ($this->httpStatus != 200) {
-			return [];
+			return false;
         }
 
 		$list = json_decode($result, true);
@@ -365,24 +351,19 @@ class BringShoppingList extends IPSModule
 
 		foreach($list['purchase'] as $item){
 			$item['completed'] = false;
-			$item['id'] = $item['name'];
-			$item['value'] = $item['name'];
 			$items[] = $item;
 		}
 
 		$list['recently']  = array_reverse($list['recently'] );
 
-		if ($includeCompletedItems){
-			foreach($list['recently'] as $item){
-				$item['completed'] = true;
-				$item['id'] = $item['name'];
-				$item['value'] = $item['name'];
-				$items[] = $item;
-			}
+
+		foreach($list['recently'] as $item){
+			$item['completed'] = true;
+			$items[] = $item;
 		}
 
-        return $items;
-    }
+        return $items;		
+	}
 
     private function getListItemByName( $itemText )
     {
@@ -668,6 +649,29 @@ class BringShoppingList extends IPSModule
             'items'    => $rowItems
         ];
 
+		$elements[] = [
+            'type'    => 'Label',
+            'caption' => ''
+        ];
+
+        $elements[] = [
+            'type'    => 'Label',
+            'caption' => "Visualisation settings",
+            'italic' => false,
+            'color' => 7566195
+        ];
+
+		$elements[] = [
+			'type'    => 'CheckBox',
+			'name'    => 'ShowCompletedItems',
+			'caption' => "Show completed items"
+		];
+
+		$elements[] = [
+			'type'    => 'CheckBox',
+			'name'    => 'DeleteCompletedItems',
+			'caption' => "Delete completed items from list"
+		];
 
 		$elements[] = [
             'type'    => 'NumberSpinner',
@@ -677,67 +681,6 @@ class BringShoppingList extends IPSModule
             'minimum' => 0
         ];
 
-
-		// Panel: Visualisation settings
-		$panelItems = array();
-
-		$panelItems[] = [
-			'type'    => 'CheckBox',
-			'name'    => 'ShowCompletedItems',
-			'caption' => "Show completed items"
-		];
-
-		$panelItems[] = [
-			'type'    => 'CheckBox',
-			'name'    => 'DeleteCompletedItems',
-			'caption' => "Delete completed items from list"
-		];
-
-		$elements[] = [
-            'type'    => 'ExpansionPanel',
-			'caption' => 'Visualisation settings',
-            'items'    => $panelItems
-        ];
-
-		// Panel:Alexa shopping list synchronisation
-		$panelItems = array();
-
-		$panelItems[] = [
-            'type'    => 'SelectInstance',
-            'name'    => 'AlexaListInstance',
-            'caption' => 'AlexaList Instance',
-			'width'	  => '600px',
-			'validModules' => ['{7129178B-E633-238A-0851-2F1B5A09805E}']
-        ];
-
-		$panelItems[] = [
-            'type'    => 'Select',
-            'name'    => 'SyncMode',
-            'caption' => "Synchronisation mode",
-			'width'	  => '600px',
-            'options' => [
-				['caption' => 'Alexa → Bring! (Add entries to Bring!List and delete them from AlexaList)', 'value' => 1]
-			]
-        ];
-
-		$panelItems[] = [
-            'type'    => 'Select',
-            'name'    => 'SyncInterval',
-            'caption' => "Synchronisation interval",
-			'width'	  => '600px',
-            'options' => [
-				['caption' => 'disabled', 'value' => 0],
-				['caption' => '5 minutes', 'value' => 5*60],
-				['caption' => '15 minutes', 'value' => 15*60],
-				['caption' => '60 minutes', 'value' => 60*60],
-			]
-        ];
-
-        $elements[] = [
-            'type'    => 'ExpansionPanel',
-			'caption' => 'Alexa synchronisation (Echo Remote module required)',
-            'items'    => $panelItems
-        ];
 
         return $elements;
     }
@@ -753,13 +696,6 @@ class BringShoppingList extends IPSModule
             'type'    => 'Button',
             'caption' => 'Refresh',
             'onClick' => 'IPS_RequestAction($id, "Update", "");', 
-        ];
-
-		$elements[] = [
-            'type'    => 'Button',
-            'caption' => 'Synchronize',
-			'enabled' => ($this->ReadPropertyInteger('AlexaListInstance')>1),
-            'onClick' => 'IPS_RequestAction($id, "Sync", "");', 
         ];
 
         return $elements;

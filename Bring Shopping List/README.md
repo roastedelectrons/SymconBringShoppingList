@@ -1,5 +1,5 @@
 # Bring Shopping List
-(Beschreibung)
+Modul zum Anzeigen und Bearbeiten von Bring Einkauslisten.
 
 ## Inhaltsverzeichnis
 1. [Funktionsumfang](#funktionsumfang)
@@ -8,9 +8,8 @@
 4. [PHP-Befehlsreferenz](#php-befehlsreferenz)
 
 ## Funktionsumfang
-* Einträge hinzufügen, abhaken und löschen
-* Darstellung und Bearbeitung von Listen in Tile-Visu
-* Synchronisierung mit Alexa Listen (Echo Remote Modul erforderlich)
+* Anzeige von Einkaufslisten (WebFront und Tile-Visu)
+* Hinzufügen und Entfernen von Einträgen
 
 ## Konfiguration der Instanz
 
@@ -18,40 +17,32 @@
 |-----| -----| -----| ----- |
 |Email | ValidationTextBox | Email | |
 |Password | PasswordTextBox | Password | |
-|ListID | Select | Liste | `Zuhause`, `Eigene Listen...`|
-|UpdateInterval | NumberSpinner | Aktualisierungsintervall in Minuten | |
 
-### Visualisierung
 |Eigenschaft| Typ| Beschreibung| Wert |
 |-----| -----| -----| ----- |
+|ListID | Select | Liste | `Select list`, `Zuhause`, `Test`|
 |ShowCompletedItems | CheckBox | Zeige erledigte Einträge | `false`|
 |DeleteCompletedItems | CheckBox | Lösche erledigte Einträge von Liste | `false`|
-
-### Alexa Synchronisation
-|Eigenschaft| Typ| Beschreibung| Wert |
-|-----| -----| -----| ----- |
-|AlexaListInstance | SelectInstance | AlexaList Instanz | |
-|SyncMode | Select | Synchronisierungsmodus | `Alexa → Bring! (Add entries to Bring!List and delete them from AlexaList)`|
-|SyncInterval | Select | Synchronisierungsintervall | `disabled`, `5 minutes`, `15 minutes`, `60 minutes`|
+|UpdateInterval | NumberSpinner | Aktualisierungsintervall | |
 
 ## Statusvariablen und Profile
 
 |Ident| Typ| Profil| Beschreibung |
 |-----| -----| -----| ----- |
-|AddItem |string | |Add Item |
 |List |string |~TextBox |List |
+|AddItem |string | |Add Item |
 
 ## PHP-Befehlsreferenz
 
 ### AddItem
 ```php
-BringList_AddItem( int $InstanceID, string $text, string $specification );
+BringList_AddItem( int $InstanceID, string $itemText, string $specificationText );
 ```
 |Parameter| Typ| Beschreibung |
 |-----| -----| ----- |
 |$InstanceID |int |ID der Bring Shopping List-Instanz |
-|$text |string | |
-|$specification |string | |
+|$itemText |string | |
+|$specificationText |string | |
 
 ### CheckItem
 ```php
@@ -71,9 +62,9 @@ BringList_DeleteItem( int $InstanceID, string $itemText );
 |$InstanceID |int |ID der Bring Shopping List-Instanz |
 |$itemText |string | |
 
-### GetListItems
+### GetItems
 ```php
-BringList_GetListItems( int $InstanceID, bool $includeCompletedItems );
+BringList_GetItems( int $InstanceID, bool $includeCompletedItems );
 ```
 |Parameter| Typ| Beschreibung |
 |-----| -----| ----- |

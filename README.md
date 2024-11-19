@@ -3,7 +3,10 @@
 Folgende Module beinhaltet das SymconBringShoppingList Repository:
 
 - __Bring Shopping List__ ([Dokumentation](Bring%20Shopping%20List))  
-	Kurze Beschreibung des Moduls.
+	Modul zum Anzeigen und Bearbeiten von Bring Einkauslisten.
+
+- __Shopping List Syn__ ([Dokumentation](ShoppingListSync))  
+	Modul zur Synchronisierung von Einkaufslisten. Untersützte Listen Module: Bring Shopping List (aus diesem Modul), Alexa List (Echo Remote Module)
 
 
 ## Quellen

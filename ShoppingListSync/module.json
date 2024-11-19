@@ -1,0 +1,14 @@
+{
+    "id": "{F9C0A0D3-D0D7-ABD1-3EA8-DBA7129DBC37}",
+    "name": "Shopping List Sync",
+    "type": 3,
+    "vendor": "",
+    "aliases": [
+        "Shopping List Sync for Bring! and Alexa"
+    ],
+    "parentRequirements": [],
+    "childRequirements": [],
+    "implemented": [],
+    "prefix": "ShoppingListSync",
+    "url": ""
+}

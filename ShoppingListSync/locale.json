@@ -1,0 +1,26 @@
+{
+    "translations": {
+      "de": {
+        "Alexa Shopping- and ToDo-List": "Alexa Einkaufs- und ToDo-Liste",
+        "List": "Liste",
+        "Select list": "Liste auswählen",
+        "Reload lists": "Listen neu laden",
+        "Update interval": "Aktualisierungsintervall",
+        "Visualisation settings": "Visualisierungs-Einstellungen", 
+        "Show completed items": "Zeige erledigte Einträge",
+        "Delete completed items from list": "Lösche erledigte Einträge von Liste",
+        "Alexa synchronisation (Echo Remote module required)": "Alexa Synchronisation (Echo Remote Modul erforderlich)",
+        "AlexaList Instance": "AlexaList Instanz",
+        "Synchronisation mode": "Synchronisierungsmodus",
+        "Alexa → Bring! (Add entries to Bring!List and delete them from AlexaList)": "Alexa → Bring! (Füge Einträge zu Bring!Liste hinzu und lösche sie von AlexaListe)",
+        "Synchronisation interval": "Synchronisierungsintervall",
+        "minutes": "Minuten",
+        "disabled": "deaktiviert",
+        "Refresh": "Aktualisieren",
+        "Synchronize": "Synchronisieren",
+        "Add Item": "Eintrag hinzufügen",
+        "Incorrect login data": "Ungültige Zugangsdaten",
+        "Invalid access token. Login again!": "Ungültiger Zugangstoken. Erneut einloggen!"
+      }
+    }
+  }
