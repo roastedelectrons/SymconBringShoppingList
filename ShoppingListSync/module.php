@@ -393,8 +393,8 @@ class ShoppingListSync extends IPSModule
             'caption' => "Synchronisation mode",
 			'width'	  => '600px',
             'options' => [
-				['caption' => 'Transfer: Alexa → Bring! (Add entries from Alexa to Bring and delete them from Alexa)', 'value' => 1],
-				['caption' => 'Sync: Alexa ↔ Bring! (Add and delete changed entries on both lists to keep them in sync)', 'value' => 2]
+				['caption' => 'Transfer: Alexa → Bring (Add entries from Alexa to Bring and delete them from Alexa)', 'value' => 1],
+				['caption' => 'Sync: Alexa ↔ Bring (Add and delete changed entries on both lists to keep them in sync)', 'value' => 2]
 			]
         ];
 
