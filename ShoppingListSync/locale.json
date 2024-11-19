@@ -1,26 +1,19 @@
 {
     "translations": {
       "de": {
-        "Alexa Shopping- and ToDo-List": "Alexa Einkaufs- und ToDo-Liste",
-        "List": "Liste",
-        "Select list": "Liste auswählen",
-        "Reload lists": "Listen neu laden",
-        "Update interval": "Aktualisierungsintervall",
-        "Visualisation settings": "Visualisierungs-Einstellungen", 
-        "Show completed items": "Zeige erledigte Einträge",
-        "Delete completed items from list": "Lösche erledigte Einträge von Liste",
-        "Alexa synchronisation (Echo Remote module required)": "Alexa Synchronisation (Echo Remote Modul erforderlich)",
-        "AlexaList Instance": "AlexaList Instanz",
+        "Shopping List Synchronisation for Bring! and Alexa": "Einkaufslisten Synchronisation für Bring! und Alexa",
+        "Alexa shopping list": "Alexa Einkaufsliste",
+        "Bring shopping list": "Bring Einkaufsliste",
         "Synchronisation mode": "Synchronisierungsmodus",
-        "Alexa → Bring! (Add entries to Bring!List and delete them from AlexaList)": "Alexa → Bring! (Füge Einträge zu Bring!Liste hinzu und lösche sie von AlexaListe)",
+        "Transfer: Alexa → Bring (Add entries from Alexa to Bring and delete them from Alexa)": "Übertragen: Alexa → Bring (Füge Einträge von Alexa zu Bring hinzu und lösche sie von Alexa)",
+        "Sync: Alexa ↔ Bring (Add and delete changed entries on both lists to keep them in sync)": "Synchronisation: Alexa ↔ Bring (Geänderte Einträge auf beiden Listen hinzufügen und löschen)",
         "Synchronisation interval": "Synchronisierungsintervall",
-        "minutes": "Minuten",
+        "5 minutes": "5 Minuten",
+        "15 minutes": "15 Minuten",
+        "60 minutes": "60 Minuten",
         "disabled": "deaktiviert",
         "Refresh": "Aktualisieren",
-        "Synchronize": "Synchronisieren",
-        "Add Item": "Eintrag hinzufügen",
-        "Incorrect login data": "Ungültige Zugangsdaten",
-        "Invalid access token. Login again!": "Ungültiger Zugangstoken. Erneut einloggen!"
+        "Synchronize": "Synchronisieren"
       }
     }
   }

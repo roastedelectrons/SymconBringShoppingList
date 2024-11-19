@@ -16,9 +16,9 @@ Untersützte Listen Module:
 
 |Eigenschaft| Typ| Beschreibung| Wert |
 |-----| -----| -----| ----- |
-|InstanceID1 | SelectInstance | Shopping list 1 | |
-|InstanceID2 | SelectInstance | Shopping list 2 | |
-|SyncMode | Select | Synchronisierungsmodus | `Transfer: List 1 → List 2 (Add entries from list 1 to list 2 and delete them from list 1)`, `Sync: List 1 ↔ List 2 (Add and delete changed entries on both lists to keep them in sync)`|
+|InstanceID1 | SelectInstance | Alexa Einkaufsliste | |
+|InstanceID2 | SelectInstance | Bring Einkaufsliste | |
+|SyncMode | Select | Synchronisierungsmodus | `Transfer: Alexa → Bring! (Add entries from Alexa to Bring and delete them from Alexa)`, `Sync: Alexa ↔ Bring! (Add and delete changed entries on both lists to keep them in sync)`|
 |SyncInterval | Select | Synchronisierungsintervall | `disabled`, `5 minutes`, `15 minutes`, `60 minutes`|
 
 ## Statusvariablen und Profile

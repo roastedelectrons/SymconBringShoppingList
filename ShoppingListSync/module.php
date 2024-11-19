@@ -374,7 +374,7 @@ class ShoppingListSync extends IPSModule
 		$elements[] = [
             'type'    => 'SelectInstance',
             'name'    => 'InstanceID1',
-            'caption' => 'Shopping list 1',
+            'caption' => 'Alexa shopping list',
 			'width'	  => '600px',
 			'validModules' => $this->supportedModules
         ];
@@ -382,7 +382,7 @@ class ShoppingListSync extends IPSModule
 		$elements[] = [
             'type'    => 'SelectInstance',
             'name'    => 'InstanceID2',
-            'caption' => 'Shopping list 2',
+            'caption' => 'Bring shopping list',
 			'width'	  => '600px',
 			'validModules' => $this->supportedModules
         ];
@@ -393,8 +393,8 @@ class ShoppingListSync extends IPSModule
             'caption' => "Synchronisation mode",
 			'width'	  => '600px',
             'options' => [
-				['caption' => 'Transfer: List 1 → List 2 (Add entries from list 1 to list 2 and delete them from list 1)', 'value' => 1],
-				['caption' => 'Sync: List 1 ↔ List 2 (Add and delete changed entries on both lists to keep them in sync)', 'value' => 2]
+				['caption' => 'Transfer: Alexa → Bring! (Add entries from Alexa to Bring and delete them from Alexa)', 'value' => 1],
+				['caption' => 'Sync: Alexa ↔ Bring! (Add and delete changed entries on both lists to keep them in sync)', 'value' => 2]
 			]
         ];
 
