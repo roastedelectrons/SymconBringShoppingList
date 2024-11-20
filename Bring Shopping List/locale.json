@@ -19,6 +19,7 @@
         "Refresh": "Aktualisieren",
         "Synchronize": "Synchronisieren",
         "Add Item": "Eintrag hinzufügen",
+        "Add": "Hinzufügen",
         "Incorrect login data": "Ungültige Zugangsdaten",
         "Invalid access token. Login again!": "Ungültiger Zugangstoken. Erneut einloggen!"
       }

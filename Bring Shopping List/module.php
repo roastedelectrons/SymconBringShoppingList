@@ -128,7 +128,7 @@ class BringShoppingList extends IPSModule
                 break;
 
 			// Visu
-            case 'VisuGetItems':
+            case 'VisuGetList':
                 $items = $this->GetItemsForVisu();
                 $this->UpdateVisualizationValue(json_encode($items));
                 break;
