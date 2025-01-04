@@ -186,16 +186,21 @@ class ShoppingListSync extends IPSModule
 		$buffer = json_decode($this->ReadAttributeString('Buffer'), true);
 		$instanceBuffer = [];
 	
-		if (isset($buffer[$instanceID])) {
+		if (isset($buffer[$instanceID]) && is_array($buffer[$instanceID]) ) {
 			$instanceBuffer = $buffer[$instanceID];
 		}
 		return $instanceBuffer;
 	}
 	
 	private function setSyncBuffer($instanceID, $value){
+		if (!is_array($value))
+			return false;
+
 		$buffer = json_decode($this->ReadAttributeString('Buffer'), true);
 		$buffer[$instanceID] = $value;
 		$this->WriteAttributeString('Buffer', json_encode($buffer));
+
+		return true;
 	}
 	
 	private function updateList($instanceID){
@@ -221,8 +226,17 @@ class ShoppingListSync extends IPSModule
 			// Alexa
 			case "{7129178B-E633-238A-0851-2F1B5A09805E}":
 				$items = ALEXALIST_GetItems($instanceID, false);
-				break;           
+				break;
+			
+			default:
+				$items = false;
+				break;
 		}
+
+		if ($items === false){
+			trigger_error('Failed to get items for instanceID '. $instanceID, E_USER_ERROR);
+		}
+
 		return $items;
 	}
 
