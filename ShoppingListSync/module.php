@@ -251,7 +251,7 @@ class ShoppingListSync extends IPSModule
 				break;
 			// Alexa
 			case "{7129178B-E633-238A-0851-2F1B5A09805E}":
-				$itemName = 'value';
+				$itemName = 'itemName';
 				break;           
 		}
 
@@ -321,7 +321,7 @@ class ShoppingListSync extends IPSModule
 				break;
 			// Alexa
 			case "{7129178B-E633-238A-0851-2F1B5A09805E}":
-				$itemName = 'value';
+				$itemName = 'itemName';
 				break;           
 		}
 	
@@ -346,7 +346,7 @@ class ShoppingListSync extends IPSModule
 				break;
 			// Alexa
 			case "{7129178B-E633-238A-0851-2F1B5A09805E}":
-				$itemName = 'value';
+				$itemName = 'itemName';
 				break;           
 		}
 	

@@ -184,7 +184,7 @@ class BringShoppingList extends IPSModule
             $symbol = "☐";
             if ($item['completed'])
             	$symbol = "☑";
-            $string .= $symbol. "    " .$item['value']."\n\r";
+            $string .= $symbol. "    " .$item['name']."\n\r";
         }
         
         $this->SetValue('List', $string);
@@ -199,7 +199,7 @@ class BringShoppingList extends IPSModule
 
 		foreach( $items as $key=>$item){
 			$items[$key]['id'] = $item['name'];
-			$items[$key]['value'] = $item['name'];
+			$items[$key]['name'] = $item['name'];
 			if (!$this->ReadPropertyBoolean('ShowCompletedItems') && $item['completed']){
 				unset($items[$key]);
 			}
